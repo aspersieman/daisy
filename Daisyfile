@@ -1,0 +1,7 @@
+session:
+    - name: Session Name
+    - windows:
+        - name: Window1
+        - keys:
+            - key press 1
+            - key press 2

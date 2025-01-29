@@ -11,5 +11,4 @@ session:
         - name: Window1
         - keys:
             - key press 1
-            - key press 2
-```
+            - key press 2```

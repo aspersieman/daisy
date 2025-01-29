@@ -1,15 +1,14 @@
 
 all: daisy
 
-fruit.o: fruit.c fruit.h
-	gcc -c -g -O0 -Wall fruit.c
+daisy: daisy.o
+	gcc -o daisy daisy.o
 
-daisy.o: main.c fruit.h
-	gcc -c -g -O0 -Wall main.c
+daisy.o: daisy.c
+	gcc -c -g -O0 -Wall daisy.c
 
-daisy: fruit.o daisy.o
-	gcc -o daisy fruit.o main.o -lyaml
+scan.o: scan.c
+	gcc -c -g -O0 -Wall scan.c
 
-clean:
-	rm -f daisy
-	rm -f *.o core
+scan: scan.o
+	gcc -o scan scan.o -lyaml
