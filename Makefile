@@ -4,6 +4,7 @@ BIN_DIR=bin
 BUILD_DIR=build
 INSTALL_DIR=/usr/local/bin
 BIN_PATH=/usr/local/bin/$(APP_NAME)
+ARCH=$(shell go env GOARCH)
 SERVICE_PATH=/etc/systemd/system/$(APP_NAME).service
 define SERVICE_DEFINITION
 [Unit]
@@ -34,7 +35,7 @@ dev:
 build:
 	@echo "Building..."
 	@mkdir -p $(BIN_DIR)
-	GOOS=linux GOARCH=amd64 go build -o $(BIN_DIR)/$(APP_NAME) $(SRC)
+	GOOS=linux GOARCH=$(ARCH) go build -o $(BIN_DIR)/$(APP_NAME) $(SRC)
 	@echo "Built binary at $(BIN_DIR)/$(APP_NAME)"
 
 ## Install to system path
