@@ -1,0 +1,40 @@
+# Binaries and build directories
+bin/
+tmp/
+build/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.out
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Logs and runtime data
+*.log
+
+# IDE/editor files
+.vscode/
+.idea/
+*.sw?
+*.sublime-project
+*.sublime-workspace
+
+# Dependency directories
+vendor/
+
+# Air config and artifacts
+.air.toml
+.air/
+
+# Go test/cache files
+*.test
+*.prof
+
+# Module cache
+go.sum
+
+*.db

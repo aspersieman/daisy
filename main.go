@@ -21,7 +21,7 @@ func main() {
 	r.PUT("/entries/:id", updateEntry)
 	r.DELETE("/entries/:id", deleteEntry)
 
-	r.Run(":8080")
+	r.Run(":8069")
 }
 
 func getEntries(c *gin.Context) {
