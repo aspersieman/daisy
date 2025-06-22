@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="http://localhost:8080/api/entries"
+API_URL="http://localhost:8069/"
 
 # Create a new entry
 create_entry() {
