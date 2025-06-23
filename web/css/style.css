@@ -1,7 +1,8 @@
-    body { font-family: sans-serif; max-width: 700px; margin: 2rem auto; }
-    h1 { text-align: center; }
-    form, .entry { margin-bottom: 1.5rem; border: 1px solid #ddd; padding: 1rem; border-radius: 6px; }
-    label { display: block; margin-top: 0.5rem; }
-    input, textarea { width: 100%; padding: 0.5rem; margin-top: 0.2rem; }
-    button { margin-top: 1rem; padding: 0.5rem 1rem; }
-    .entry { background: #f9f9f9; }
+body { font-family: sans-serif; max-width: 700px; margin: 2rem auto; }
+h1 { text-align: center; }
+form, .entry { margin-bottom: 1.5rem; border: 1px solid #ddd; padding: 1rem; border-radius: 6px; }
+label { display: block; margin-top: 0.5rem; }
+input, textarea { width: 100%; padding: 0.5rem; margin-top: 0.2rem; }
+button { margin-top: 1rem; padding: 0.5rem 1rem; }
+.entry { background: #f9f9f9; }
+#entry-form > label { padding: 0.5rem 1rem 0 0; }

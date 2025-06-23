@@ -1,92 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Wellness Tracker</title>
-  <link rel="stylesheet" href="css/reset.css">
-  <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-  <h1>Wellness Tracker</h1>
+    <head>
+        <meta charset="UTF-8">
+        <title>Wellness Tracker</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+        <link rel="stylesheet" href="css/reset.css">
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body>
+        <h1>Wellness Tracker</h1>
 
-  <form id="entry-form">
-    <label>Rating (1-10): <input type="number" id="rating" min="1" max="10" required></label>
-    <label>Note: <textarea id="note"></textarea></label>
-    <label>Tags (comma-separated): <input type="text" id="tags"></label>
-    <button type="submit">Add Entry</button>
-  </form>
+        <form id="entry-form">
+            <label>Rating (1-10): <input type="number" id="rating" min="1" max="10" required></label>
+            <label>Note: <textarea id="note"></textarea></label>
+            <label>Tags (comma-separated): <input type="text" id="tags"></label>
+            <button type="submit">Add Entry</button>
+        </form>
 
-  <div id="entries"></div>
+        <canvas id="myChart" style="width:100%;max-width:700px;"></canvas>
+        <script language="javascript">
+        const xValues = [50,60,70,80,90,100,110,120,130,140,150];
+        const yValues = [7,8,8,9,9,9,10,11,14,14,15];
 
-  <script language="javascript">
-    // Fetch wrapper function that includes the token in the headers
-    async function fetchWithToken(url, options = {}) {
-        const token = localStorage.getItem('token');
-
-        if (token) {
-            options.headers = { ...options.headers, Authorization: `Bearer ${token}` };
-        }
-        return fetch(url, options);
-    }
-
-    async function isAuthenticated() {
-        // Check if user is logged in
-        return fetchWithToken('/api/authenticated')
-          .then(response => response.json())
-          .then(data => {
-            if (!data.authenticated) {
-              // Redirect to login page
-              window.location.href = '/login';
+        new Chart("myChart", {
+            type: "line",
+            data: {
+                labels: xValues,
+                datasets: [{
+                    fill: false,
+                    lineTension: 0,
+                    backgroundColor: "rgba(0,0,255,1)",
+                    borderColor: "rgba(0,0,255,0.1)",
+                    data: yValues
+                }]
+            },
+            options: {
+                legend: {display: false},
+                scales: {
+                    yAxes: [{ticks: {min: 6, max:16}}],
+                }
             }
-          })
-          .catch(error => console.error('Error:', error));
-    }
+        });
+        </script>
 
-    isAuthenticated();
+        <div id="entries"></div>
 
-    const API_URL = '/api/entries';
+        <script language="javascript">
+        // Fetch wrapper function that includes the token in the headers
+        async function fetchWithToken(url, options = {}) {
+            const token = localStorage.getItem('token');
 
-    async function fetchEntries() {
-      const res = await fetchWithToken(API_URL);
-      const entries = await res.json();
-      const container = document.getElementById('entries');
-      container.innerHTML = '';
-      entries.reverse().forEach(entry => {
-        const div = document.createElement('div');
-        div.className = 'entry';
-        div.innerHTML = `
-          <strong>Rating:</strong> ${entry.rating}<br>
-          <strong>Note:</strong> ${entry.note || '(none)'}<br>
-          <strong>Tags:</strong> ${entry.tags}<br>
-          <small><em>${new Date(entry.date).toLocaleString()}</em></small><br>
-          <button onclick="deleteEntry(${entry.ID})">Delete</button>
-        `;
-        container.appendChild(div);
-      });
-    }
+            if (token) {
+                options.headers = { ...options.headers, Authorization: `Bearer ${token}` };
+            }
+            return fetch(url, options);
+        }
 
-    async function deleteEntry(id) {
-      await fetchWithToken(`${API_URL}/${id}`, { method: 'DELETE' });
-      fetchEntries();
-    }
+        async function isAuthenticated() {
+            // Check if user is logged in
+            return fetchWithToken('/api/authenticated')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.authenticated) {
+                        // Redirect to login page
+                        window.location.href = '/login';
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
 
-    document.getElementById('entry-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const rating = document.getElementById('rating').value;
-      const note = document.getElementById('note').value;
-      const tags = document.getElementById('tags').value;
+        isAuthenticated();
 
-      await fetchWithToken('/api/entries', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rating: Number(rating), note, tags }),
-      });
+        const API_URL = '/api/entries';
 
-      e.target.reset();
-      fetchEntries();
-    });
+        async function fetchEntries() {
+            const res = await fetchWithToken(API_URL);
+            const entries = await res.json();
+            const container = document.getElementById('entries');
+            container.innerHTML = '';
+            entries.reverse().forEach(entry => {
+                const div = document.createElement('div');
+                div.className = 'entry';
+                div.innerHTML = `
+<strong>Rating:</strong> ${entry.rating}<br>
+<strong>Note:</strong> ${entry.note || '(none)'}<br>
+<strong>Tags:</strong> ${entry.tags}<br>
+<small><em>${new Date(entry.date).toLocaleString()}</em></small><br>
+<button onclick="deleteEntry(${entry.id})">Delete</button>
+`;
+                container.appendChild(div);
+            });
+        }
 
-    fetchEntries();
-  </script>
-</body>
+        async function deleteEntry(id) {
+            await fetchWithToken(`${API_URL}/${id}`, { method: 'DELETE' });
+            fetchEntries();
+        }
+
+        document.getElementById('entry-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const rating = document.getElementById('rating').value;
+            const note = document.getElementById('note').value;
+            const tags = document.getElementById('tags').value;
+
+            await fetchWithToken('/api/entries', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ rating: Number(rating), note, tags }),
+            });
+
+            e.target.reset();
+            fetchEntries();
+        });
+
+        fetchEntries();
+        </script>
+    </body>
 </html>
