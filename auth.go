@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"github.com/gin-gonic/gin"
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
@@ -25,11 +25,16 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if len(tokenString) > 7 && tokenString[:7] == "Bearer " {
+			tokenString = tokenString[7:]
+		}
+		// TODO: Generate secret key for JWT and read from .env
+		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
 			return []byte("your-secret-key"), nil
 		})
 		if err != nil {
-			c.JSON(401, gin.H{"error": "Invalid token"})
+			log.Printf("ERROR: Error parsing token: %v", err)
+			c.JSON(401, gin.H{"error": "Invalid token a"})
 			c.Abort()
 			return
 		}
@@ -37,7 +42,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			c.Set("user", claims["user"])
 		} else {
-			c.JSON(401, gin.H{"error": "Invalid token"})
+			c.JSON(401, gin.H{"error": "Invalid token b"})
 			c.Abort()
 		}
 	}
@@ -46,8 +51,6 @@ func AuthMiddleware() gin.HandlerFunc {
 func Login(c *gin.Context) {
 	username := c.PostForm("username")
 	password := c.PostForm("password")
-
-	fmt.Printf("Username: %s, Password: %s\n", username, password)
 
 	// Find user by username
 	user, err := FindUserByUsername(username)
@@ -66,6 +69,7 @@ func Login(c *gin.Context) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user": user.ID,
 	})
+	// TODO: Generate secret key for JWT and read from .env
 	tokenString, err := token.SignedString([]byte("your-secret-key"))
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to generate token"})

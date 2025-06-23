@@ -1,14 +1,15 @@
 package main
 
 import (
-	"embed"
 	"database/sql"
+	"embed"
+	"io/fs"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
 	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var db *sql.DB
@@ -31,6 +32,19 @@ func main() {
 	r.GET("/favicon.ico", func(c *gin.Context) {
 		c.FileFromFS("web/favicon.ico", http.FS(staticFS))
 	})
+	cssFS, err := fs.Sub(staticFS, "web/css")
+	if err != nil {
+		panic(err)
+	}
+	jsFS, err := fs.Sub(staticFS, "web/js")
+	if err != nil {
+		panic(err)
+	}
+
+	// Serve the static files
+	r.StaticFS("/css", http.FS(cssFS))
+	r.StaticFS("/js", http.FS(jsFS))
+
 	r.POST("/api/login", loginHandler)
 	r.GET("/api/authenticated", authenticatedHandler)
 
@@ -79,6 +93,7 @@ func loginHandler(c *gin.Context) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user": user.ID,
 	})
+	// TODO: Generate secret key for JWT and read from .env
 	tokenString, err := token.SignedString([]byte("your-secret-key"))
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to generate token"})
@@ -89,39 +104,45 @@ func loginHandler(c *gin.Context) {
 }
 
 func authenticatedHandler(c *gin.Context) {
-  // Get the token from the Authorization header
-  tokenString := c.GetHeader("Authorization")
+	// Get the token from the Authorization header
+	tokenString := c.GetHeader("Authorization")
 
-  // If the token is empty, return an error
-  if tokenString == "" {
-    c.JSON(401, gin.H{"error": "Unauthorized"})
-    return
-  }
+	// Remove Bearer from the token if it exists
+	if len(tokenString) > 7 && tokenString[:7] == "Bearer " {
+		tokenString = tokenString[7:]
+	}
 
-  // Parse the token
-  token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-    return []byte("your-secret-key"), nil
-  })
+	// If the token is empty, return an error
+	if tokenString == "" {
+		c.JSON(401, gin.H{"error": "Unauthorized"})
+		return
+	}
 
-  // If the token is invalid, return an error
-  if err != nil {
-    c.JSON(401, gin.H{"error": "Invalid token"})
-    return
-  }
+	// Parse the token
+	// TODO: Generate secret key for JWT and read from .env
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
+		return []byte("your-secret-key"), nil
+	})
 
-  // If the token is valid, check if it contains the "user" claim
-  if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-    if _, ok := claims["user"]; !ok {
-      c.JSON(401, gin.H{"error": "Invalid token"})
-      return
-    }
-  } else {
-    c.JSON(401, gin.H{"error": "Invalid token"})
-    return
-  }
+	// If the token is invalid, return an error
+	if err != nil {
+		c.JSON(401, gin.H{"error": "Invalid token"})
+		return
+	}
 
-  // If the token is valid and contains the "user" claim, return success
-  c.JSON(200, gin.H{"authenticated": true})
+	// If the token is valid, check if it contains the "user" claim
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		if _, ok := claims["user"]; !ok {
+			c.JSON(401, gin.H{"error": "Invalid token"})
+			return
+		}
+	} else {
+		c.JSON(401, gin.H{"error": "Invalid token"})
+		return
+	}
+
+	// If the token is valid and contains the "user" claim, return success
+	c.JSON(200, gin.H{"authenticated": true})
 }
 
 func getEntries(c *gin.Context) {

@@ -27,7 +27,6 @@ Thumbs.db
 vendor/
 
 # Air config and artifacts
-.air.toml
 .air/
 
 # Go test/cache files

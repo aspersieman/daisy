@@ -22,7 +22,6 @@
   </form>
 
   <script>
-
     async function login(username, password) {
       const response = await fetch('/api/login', {
         method: 'POST',
@@ -32,9 +31,8 @@
 
       const data = await response.json();
       if (data.token) {
-        // Store the token locally
         localStorage.setItem('token', data.token);
-        // window.location.href = '/';
+        window.location.href = '/';
       } else {
         console.error('Invalid credentials');
       }

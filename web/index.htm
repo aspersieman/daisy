@@ -3,15 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Wellness Tracker</title>
-  <style>
-    body { font-family: sans-serif; max-width: 700px; margin: 2rem auto; }
-    h1 { text-align: center; }
-    form, .entry { margin-bottom: 1.5rem; border: 1px solid #ddd; padding: 1rem; border-radius: 6px; }
-    label { display: block; margin-top: 0.5rem; }
-    input, textarea { width: 100%; padding: 0.5rem; margin-top: 0.2rem; }
-    button { margin-top: 1rem; padding: 0.5rem 1rem; }
-    .entry { background: #f9f9f9; }
-  </style>
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <h1>Wellness Tracker</h1>
@@ -28,22 +21,28 @@
   <script language="javascript">
     // Fetch wrapper function that includes the token in the headers
     async function fetchWithToken(url, options = {}) {
-      const token = localStorage.getItem('token');
-      if (token) {
-        options.headers = { ...options.headers, Authorization: `Bearer ${token}` };
-      }
-      return fetch(url, options);
-    }
-    // Check if user is logged in
-    fetchWithToken('/api/authenticated')
-      .then(response => response.json())
-      .then(data => {
-        if (!data.authenticated) {
-          // Redirect to login page
-          window.location.href = '/login';
+        const token = localStorage.getItem('token');
+
+        if (token) {
+            options.headers = { ...options.headers, Authorization: `Bearer ${token}` };
         }
-      })
-      .catch(error => console.error('Error:', error));
+        return fetch(url, options);
+    }
+
+    async function isAuthenticated() {
+        // Check if user is logged in
+        return fetchWithToken('/api/authenticated')
+          .then(response => response.json())
+          .then(data => {
+            if (!data.authenticated) {
+              // Redirect to login page
+              window.location.href = '/login';
+            }
+          })
+          .catch(error => console.error('Error:', error));
+    }
+
+    isAuthenticated();
 
     const API_URL = '/api/entries';
 
@@ -59,7 +58,7 @@
           <strong>Rating:</strong> ${entry.rating}<br>
           <strong>Note:</strong> ${entry.note || '(none)'}<br>
           <strong>Tags:</strong> ${entry.tags}<br>
-          <small><em>${new Date(entry.CreatedAt).toLocaleString()}</em></small><br>
+          <small><em>${new Date(entry.date).toLocaleString()}</em></small><br>
           <button onclick="deleteEntry(${entry.ID})">Delete</button>
         `;
         container.appendChild(div);
@@ -80,7 +79,7 @@
       await fetchWithToken('/api/entries', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rating, note, tags }),
+        body: JSON.stringify({ rating: Number(rating), note, tags }),
       });
 
       e.target.reset();
