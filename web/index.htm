@@ -18,7 +18,8 @@
             <button type="submit">Add Entry</button>
         </form>
 
-        <canvas id="main-chart" style="width:100%;"></canvas>
+        <canvas id="main-chart"></canvas>
+
         <script language="javascript">
         const xValues = [50,60,70,80,90,100,110,120,130,140,150];
         const yValues = [7,8,8,9,9,9,10,11,14,14,15];
@@ -83,12 +84,12 @@
                 const div = document.createElement('div');
                 div.className = 'entry';
                 div.innerHTML = `
-<strong>Rating:</strong> ${entry.rating}<br>
-<strong>Note:</strong> ${entry.note || '(none)'}<br>
-<strong>Tags:</strong> ${entry.tags}<br>
-<small><em>${new Date(entry.date).toLocaleString()}</em></small><br>
-<button onclick="deleteEntry(${entry.id})">Delete</button>
-`;
+                    <small class="entry-date">📅<em>${new Date(entry.date).toLocaleString()}</em></small>
+                    <span class="form-label">Rating:</span> ${entry.rating}<br>
+                    <span class="form-label">Note:</span> ${entry.note || '(none)'}<br>
+                    <span class="form-label">Tags:</span> ${entry.tags}<br>
+                    <button onclick="deleteEntry(${entry.id})">Delete</button>
+                `;
                 container.appendChild(div);
             });
         }

@@ -29,9 +29,7 @@ button {
     padding: 0.5rem 1rem;
     background: #ff006c;
     border: 1px solid #ddd;
-    border-radius: 0.3rem;
-    cursor: pointer;
-    color: #ffffff;
+    border-radius: 0.3rem; cursor: pointer; color: #ffffff;
 }
 
 button:hover {
@@ -39,13 +37,31 @@ button:hover {
 }
 
 .entry {
-    background: #f9f9f9;
+    position: relative;
+    background: rgba(17, 17, 17, 0.8);
+    border: 1px solid #ff006c;
+    padding: 0.5rem;
+    border-radius: 0.3rem;
+    font-size: 0.7rem;
+}
+.entry-date {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    font-size: 0.8rem;
+    color: rgba(205, 205, 205, 0.8);
 }
 #entry-form > label { padding: 0.5rem 1rem 0 0; }
 #login-form > label { padding: 0.5rem 1rem 0 0; }
 #login-form, #entry-form {
     margin-left: 1rem;
     margin-right: 1rem;
+}
+
+.form-label {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: rgba(205, 205, 205, 0.8);
 }
 
 .login-logo {
@@ -58,4 +74,7 @@ button:hover {
     padding: 0.5rem;
     border-radius: 0.3rem;
     background: rgba(255, 0, 108, 0.8);
+    width: 100%;
+    max-width: 600px;
+    margin: 2rem auto;
 }
