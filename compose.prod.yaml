@@ -3,6 +3,7 @@ services:
     image: ghcr.io/aspersieman/daisy:latest
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=wedding_default"
       - "traefik.http.routers.daisy.rule=Host(`daisy.nicolaas.me`)"
       - "traefik.http.routers.daisy.entrypoints=websecure"
       - "traefik.http.routers.daisy.tls.certresolver=myresolver"
@@ -12,7 +13,13 @@ services:
       - /home/deployment/storage/daisy/:/srv/storage
     deploy:
       mode: replicated
-      replicas: 3
+      replicas: 1
     restart: always
+    networks:
+      - wedding_default
 volumes:
   letsencrypt:
+
+networks:
+  wedding_default:
+    external: true
