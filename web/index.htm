@@ -2,13 +2,14 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Wellness Tracker</title>
+        <title>Daisy - Wellness Tracker | Home</title>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
         <link rel="stylesheet" href="css/reset.css">
         <link rel="stylesheet" href="css/style.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>
-        <h1>Wellness Tracker</h1>
+        <img src="img/logo-narrow.png" alt="Daisy" class="login-logo">
 
         <form id="entry-form">
             <label>Rating (1-10): <input type="number" id="rating" min="1" max="10" required></label>
@@ -17,12 +18,12 @@
             <button type="submit">Add Entry</button>
         </form>
 
-        <canvas id="myChart" style="width:100%;max-width:700px;"></canvas>
+        <canvas id="main-chart" style="width:100%;"></canvas>
         <script language="javascript">
         const xValues = [50,60,70,80,90,100,110,120,130,140,150];
         const yValues = [7,8,8,9,9,9,10,11,14,14,15];
 
-        new Chart("myChart", {
+        new Chart("main-chart", {
             type: "line",
             data: {
                 labels: xValues,

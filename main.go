@@ -41,7 +41,7 @@ func main() {
 		c.FileFromFS("web/login.htm", http.FS(staticFS))
 	})
 	r.GET("/favicon.ico", func(c *gin.Context) {
-		c.FileFromFS("web/favicon.ico", http.FS(staticFS))
+		c.FileFromFS("web/img/favicon.ico", http.FS(staticFS))
 	})
 	cssFS, err := fs.Sub(staticFS, "web/css")
 	if err != nil {
@@ -51,10 +51,15 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	imgFS, err := fs.Sub(staticFS, "web/img")
+	if err != nil {
+		panic(err)
+	}
 
 	// Serve the static files
 	r.StaticFS("/css", http.FS(cssFS))
 	r.StaticFS("/js", http.FS(jsFS))
+	r.StaticFS("/img", http.FS(imgFS))
 
 	r.POST("/api/login", loginHandler)
 	r.GET("/api/authenticated", authenticatedHandler)

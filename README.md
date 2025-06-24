@@ -85,3 +85,6 @@ NOTE: Ensure you've ssh access to the host and have ssh'd in before
 ## Install
  - fail2ban
  - rkhunter
+
+# References
+ - https://www.design.com/maker/logo
