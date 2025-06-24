@@ -1,0 +1,18 @@
+services:
+  daisy:
+    image: ghcr.io/aspersieman/daisy:latest
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.daisy.rule=Host(`daisy.nicolaas.me`)"
+      - "traefik.http.routers.daisy.entrypoints=websecure"
+      - "traefik.http.routers.daisy.tls.certresolver=myresolver"
+      - "com.centurylinklabs.watchtower.enable=true"
+    volumes:
+      - /home/deployment/config/daisy/.env:/srv/.env
+      - /home/deployment/storage/daisy/:/srv/storage
+    deploy:
+      mode: replicated
+      replicas: 3
+    restart: always
+volumes:
+  letsencrypt:

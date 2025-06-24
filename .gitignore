@@ -37,3 +37,4 @@ vendor/
 go.sum
 
 *.db
+.env

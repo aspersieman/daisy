@@ -4,12 +4,15 @@ import (
 	"database/sql"
 	"embed"
 	"io/fs"
+	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
+	"github.com/joho/godotenv"
 )
 
 var db *sql.DB
@@ -18,7 +21,15 @@ var db *sql.DB
 var staticFS embed.FS
 
 func main() {
-	db = InitDB("daisy.db")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	dbName := os.Getenv("DB_NAME")
+	if dbName == "" {
+		log.Fatal("Cannot find database name")
+	}
+	db = InitDB(dbName)
 
 	r := gin.Default()
 
@@ -163,6 +174,11 @@ func getEntries(c *gin.Context) {
 		}
 		e.Date, _ = time.Parse(time.RFC3339, dateStr)
 		entries = append(entries, e)
+	}
+	// If entries empty, return empty list
+	if len(entries) == 0 {
+		c.JSON(http.StatusOK, []Entry{})
+		return
 	}
 	c.JSON(http.StatusOK, entries)
 }

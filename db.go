@@ -3,13 +3,29 @@ package main
 import (
 	"database/sql"
 	"log"
+	"os"
+	"path/filepath"
 
 	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func InitDB(filepath string) *sql.DB {
-	db, err := sql.Open("sqlite3", filepath)
+func InitDB(fp string) *sql.DB {
+	log.Printf("Creating database at %s", fp)
+	parentDir := filepath.Dir(fp)
+	err := os.MkdirAll(parentDir, os.ModePerm)
+	if err != nil {
+		log.Fatalf("Failed to create directory: %v", err)
+	}
+	if _, err := os.Stat(fp); os.IsNotExist(err) {
+		f, err := os.Create(fp)
+		if err != nil {
+			log.Fatalf("Failed to create file: %v", err)
+		}
+		f.Close()
+	}
+
+	db, err := sql.Open("sqlite3", fp)
 	if err != nil {
 		log.Fatalf("Failed to open database: %v", err)
 	}
@@ -41,9 +57,12 @@ func InitDB(filepath string) *sql.DB {
 	}
 
 	// Insert default user if it doesn't exist
-	defaultUser := "aspersieman"
-	defaultPassword := "aspersieman123"
+	defaultUser := os.Getenv("DEFAULT_USERNAME")
+	defaultPassword :=  os.Getenv("DEFAULT_PASSWORD")
 
+	if defaultUser == "" || defaultPassword == "" {
+		return db	
+	}
 	// Hash the password using bcrypt
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(defaultPassword), bcrypt.DefaultCost)
 	if err != nil {
